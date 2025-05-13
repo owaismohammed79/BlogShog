@@ -23,7 +23,7 @@ function Postcard({
                 {/*Idhar filePreview fn asks for fileId jisme ki featuredImage ki Id bhej rahe he kyunki uska preview chahiye na hame*/}
                 <img src={previewObject?.href} alt ={title} className='rounded-t-xl w-full object-cover'/>
             </div>
-            <div className='h-full text-xl font-bold text-center flex flex-col justify-center'>
+            <div className='text-xl font-bold text-center flex flex-col justify-center'>
                 {title}
             </div>
         </div>
