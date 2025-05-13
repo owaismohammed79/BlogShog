@@ -121,7 +121,7 @@ export class DbService{
 
     filePreview(fileId){ //this ain't a async fn as this returns the preview as soon as it's called
         try {
-            return this.bucket.getFilePreview(
+            return this.bucket.getFileView(
                 conf.appwriteBucketId,
                 fileId
             )
