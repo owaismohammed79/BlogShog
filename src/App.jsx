@@ -6,6 +6,7 @@ import {login, logout} from "./store/authSlice"
 import {useNavigate, Outlet} from "react-router-dom"
 import Loading from "./components/ui/Loading.jsx"
 //import Navbar from "./components/Header/Navbar.jsx";
+import { Analytics } from "@vercel/analytics/react"
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <main>
           <Outlet context={{ setIsActive }}/>
         </main>
+        <Analytics />
         <Footer />
       </div>
     </div>

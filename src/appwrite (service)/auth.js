@@ -57,7 +57,7 @@ export class AuthService{
 
     async loginWithGoogle(){
         try {
-            const userData =  this.account.createOAuth2Session('google', 'http://localhost:5173/home', 'http://localhost:5173/login')
+            const userData =  this.account.createOAuth2Session('google', `${conf.BaseUrl}/home`, `${conf.BaseUrl}/login`)
             //This fucking thing actually returns user Data but the documentation doesn't say so
             localStorage.setItem('auth_token', userData.$id);
             return userData;

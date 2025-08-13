@@ -48,6 +48,7 @@ function Login() {
             setIsActive('/home')
           }
         })
+        setTimeout(() => navigate("/home"), 100)
       } catch (error) {
         console.error("Google login error:", error)
         setError(error.message || "An error occurred while logging in with Google")
