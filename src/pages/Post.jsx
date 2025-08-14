@@ -1,36 +1,55 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import appwriteService from "../appwrite (service)/config";
-import { Button, Container } from "../components";
-import parse from "html-react-parser";
+import { Button } from "../components";
 import { useSelector } from "react-redux";
 import Loading from "../components/ui/Loading";
+import DOMPurify from 'dompurify';
+import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
+import formatDate from "../utils/formatDate";
+import { Query } from "appwrite";
 
 export default function Post() {
     const [post, setPost] = useState(null);
+    const [relatedPosts, setRelatedPosts] = useState([]);
     const [error, setError] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
 
     const userData = useSelector((state) => state.auth.userData);
-    //Only if both the post and the userData exist then check if the person viewing this page is the author or not to give him edit access 
+    
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const [previewUrl, setPreviewUrl] = useState(null);
+
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         if (slug) {
-            try{
-                appwriteService.getPost(slug).then((post) => {
-                    if (post) {
-                        setPost(post);
-                        setPreviewUrl(appwriteService.filePreview(post.featuredImage))
-                    }
-                    else navigate("/home");
-                });
-            } catch (error) {
-                setError(error);
+            appwriteService.getPost(slug).then((post) => {
+                if (post) {
+                    post.content = DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } });
+                    setPost(post);
+                    setPreviewUrl(appwriteService.filePreview(post.featuredImage));
+
+                    appwriteService.getPosts([Query.limit(3)]).then((postsData) => {
+                        if (postsData) {
+                            const filteredPosts = postsData.documents
+                                .filter((p) => p.$id !== slug)
+                                .slice(0, 2);
+                            setRelatedPosts(filteredPosts);
+                        }
+                    });
+
+                } else {
+                    navigate("/home");
+                }
+            }).catch((error) => {
+                setError(error.message || "Failed to fetch post.");
                 console.log(error);
-            }
-        } else navigate("/home");
+            });
+        } else {
+            navigate("/home");
+        }
     }, [slug, navigate]);
 
     const deletePost = () => {
@@ -42,44 +61,110 @@ export default function Post() {
         });
     };
 
-    if(error) {
-        return <div className="flex justify-center items-center h-screen font-bold">{error}</div>
+    if (error) {
+        return <div className="flex justify-center items-center h-screen font-bold text-red-500">{error}</div>
     }
 
-    return post ? (
-        <div className="py-8">
-            <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2 h-96">
-                    <img
-                        src={previewUrl.href}
-                        alt={post.title}
-                        className="rounded-xl"
-                    />
+    if (!post) {
+        return (
+            <div className="w-full flex justify-center items-center font-bold h-screen">
+                <Loading />
+            </div>
+        );
+    }
 
-                    {isAuthor && (
-                        <div className="absolute right-6 top-6">
-                            <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3">
-                                    Edit
-                                </Button>
-                            </Link>
-                            <Button bgColor="bg-red-500" onClick={deletePost}>
-                                Delete
+    return (
+        <div className="min-h-screen">
+            <div className="max-w-4xl mx-auto px-4 pt-6">
+                <button
+                    onClick={() => navigate('/home')}
+                    className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors group"
+                >
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    <span>Back to all posts</span>
+                </button>
+            </div>
+
+            <div className="relative h-96 my-8 overflow-hidden">
+                <img
+                    src={previewUrl?.href}
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40"></div>
+                {isAuthor && (
+                    <div className="absolute right-6 top-6 z-10">
+                        <Link to={`/edit-post/${post.$id}`}>
+                            <Button bgColor="bg-green-500" className="mr-3">
+                                Edit
                             </Button>
-                        </div>
-                    )}
-                </div>
-                <div className="w-full mb-6">
-                    <h1 className="text-2xl font-bold">{post.title}</h1>
-                </div>
-                <div className="browser-css">
-                    {parse(post.content)
-                    //This parsing is coz by default the RTE sends in the content in HTML format and this parses it to show the content as it should look and not the HRML
-                    }
+                        </Link>
+                        <Button bgColor="bg-red-500" onClick={deletePost}>
+                            Delete
+                        </Button>
                     </div>
-            </Container>
+                )}
+            </div>
+
+            <article className="max-w-4xl mx-auto px-4 pb-20">
+                <header className="mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                        {post.title}
+                    </h1>
+
+                    <div className="flex flex-wrap items-center gap-6 text-gray-400 mb-8">
+                        <div className="flex items-center space-x-2">
+                            <User className="w-5 h-5" />
+                            <span className="font-medium text-gray-300">{post.author || 'Anonymous'}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Calendar className="w-5 h-5" />
+                            <span>{formatDate(post.publishedDate || post.$createdAt)}</span>
+                        </div>
+                        <button className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-800/50 rounded-full transition-colors">
+                            <Share2 className="w-4 h-4" />
+                            <span>Share</span>
+                        </button>
+                    </div>
+
+                    {post.excerpt && (
+                        <p className="text-xl text-gray-300 leading-relaxed italic border-l-4 border-gray-600 pl-6">
+                            {post.excerpt}
+                        </p>
+                    )}
+                </header>
+
+                <div
+                    className="prose prose-invert prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+
+                {relatedPosts.length > 0 && (
+                    <div className="mt-16">
+                        <h2 className="text-2xl font-bold text-white mb-8">Related Posts</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {relatedPosts.map((relatedPost) => (
+                                <Link
+                                    key={relatedPost.$id}
+                                    to={`/posts/${relatedPost.$id}`}
+                                    className="glass-effect rounded-xl p-6 cursor-pointer group hover:scale-105 transition-all duration-300 block"
+                                >
+                                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-gray-200 transition-colors">
+                                        {relatedPost.title}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                                        {relatedPost.excerpt}
+                                    </p>
+                                    <div className="flex items-center justify-between text-xs text-gray-500">
+                                        <span>{relatedPost.author}</span>
+                                        <span>{formatDate(relatedPost.publishedDate || relatedPost.$createdAt)}</span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </article>
         </div>
-    ) : (<div className="w-full flex justify-center items-center font-bold h-screen">
-        <Loading />
-        </div>);
+    );
 }

@@ -14,7 +14,7 @@ export class DbService{
         this.bucket = new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}){
+    async createPost({title, slug, content, featuredImage, status, userId, author, excerpt, publishedDate}){
         try {
             return await this.databases.createDocument( //The place where slug isused is simply document ID, could've used ID.unique.
                 conf.appwriteDatabaseId,
@@ -25,7 +25,10 @@ export class DbService{
                     content,
                     featuredImage,
                     status,
-                    userId
+                    userId,
+                    author,
+                    excerpt,
+                    publishedDate
                 }
             )
         } catch (error) {
@@ -33,7 +36,7 @@ export class DbService{
         }
     }
 
-    async updatePost( slug, {title, content, featuredImage, status}){
+    async updatePost( slug, {title, content, featuredImage, status, excerpt, publishedDate}){
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -43,7 +46,9 @@ export class DbService{
                     title,
                     content,
                     featuredImage,
-                    status
+                    status,
+                    excerpt,
+                    publishedDate
                 }
             )
         } catch (error) {

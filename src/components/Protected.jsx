@@ -22,7 +22,7 @@ function Protected({children, authentication =true}) {
   },[authentication, authStatus, navigate]) //Check that even navigate is added as a dependency i.e coz whenever you navigate from 
   //one page to another 
 
-  return loading ? <h1>Loading...</h1>: <>{children}</>; //Children ko enclose karna hoga, just can't return children
+  return loading ? <h1>{Loading}</h1>: <>{children}</>; //Children ko enclose karna hoga, just can't return children
 }
 
 Protected.propTypes = {

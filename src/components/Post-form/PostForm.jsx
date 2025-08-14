@@ -5,6 +5,7 @@ import {Button, Input, RTE, Select} from "../index";
 import appwriteService from "../../appwrite (service)/config";
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types'
+import generateExcerpt from '../../utils/generateExcerpt';
 
 
 //This component is the form to create a new blog post which makes use of the RTE comp and image, title and stuff and then 
@@ -52,14 +53,22 @@ function PostForm({post}) {
         {/*.substring(0, 255)*/} //This is to limit the content to 255 characters only
 
       try{
+        const postData = {
+            ...data,
+            content: contentString,
+            author: userData.name || 'Anonymous',
+            publishedDate: new Date().toISOString(),
+            excerpt: generateExcerpt(contentString, 150),
+            userId: userData.$id,
+        };
+
         if(post){
           const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null
           if(file) {
             await appwriteService.deleteFile(post.featuredImage) //Realize that featuredImage is the same name that we used in the dbservice (appwriteservice). The old image is being deleted and new img was uploaded as the img and the blog post are stored separately. And henceforth they are acting like two separate entities, all that we are storing in the dbPost is the image's ID
           }
           const dbPost = await appwriteService.updatePost(post.$id, {
-            ...data,
-            content: contentString,
+            ...postData,
             featuredImage: file ? file.$id : undefined
             //If file is present then set its ID (given var name is $id) else set undefined
           })
@@ -68,8 +77,8 @@ function PostForm({post}) {
           const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null
           if(file) {
             const fileId = file.$id; //Extracting the image ID as in the data we won't get the image ID just that the img would've uploaded in the DB
-            data.featuredImage = fileId; //setting the attribute 
-            const dbPost = await appwriteService.createPost({...data, content: contentString, featuredImage: fileId, userId: userData?.$id || ''}) //Associating the user with the blog post
+            postData.featuredImage = fileId; //setting the attribute 
+            const dbPost = await appwriteService.createPost(postData) //Associating the user with the blog post
             if(dbPost) navigate(`/posts/${dbPost.$id}`)
           }
         }
@@ -109,7 +118,7 @@ function PostForm({post}) {
   return (
     <>
       {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit(submit)} className="flex flex-col md:flex-row border-2 bg-gray-200 border-slate-300 rounded-lg p-4">
+      <form onSubmit={handleSubmit(submit)} className="flex flex-col md:flex-row border-2 bg-gray-900/50 border-gray-800/50 rounded-2xl p-4">
         <div className="md:w-2/3 px-2">
             <Input
                 label="Title :"
@@ -145,11 +154,11 @@ function PostForm({post}) {
             {/*See above that img types are also given*/}
             {imagePreviewObject && (
                 <div className={`w-full mb-4 `}>
-                    <h2 className="m-1">Uploaded Image :</h2>
+                    <h2 className="m-1 text-white">Uploaded Image :</h2>
                     <img
                         src={imagePreviewObject.href}
                         alt=" Uploaded img Preview"
-                        className="rounded-lg"
+                        className="rounded-xl"
                     />
                 </div>
             )}

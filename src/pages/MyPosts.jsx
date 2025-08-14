@@ -1,32 +1,19 @@
-import { Postcard, Container } from "../components/index"
-import { useEffect, useState } from "react"
-import appwriteService from "../appwrite (service)/config"
-import Loading  from "../components/ui/Loading"
+import { Container } from "../components/index"
 import { useSelector } from 'react-redux'
+import generateExcerpt from '../utils/generateExcerpt'
+import formatDate from '../utils/formatDate'
+import { useNavigate } from 'react-router-dom'
+import { BlogCard } from '../components'
 
 function MyPosts() {
-    const [imagesLoaded, setImagesLoaded] = useState(false);
     const posts = useSelector(state => state.posts.posts)
     const userData = useSelector((state) => state.auth.userData);
+    const navigate = useNavigate();
     const filteredPosts = posts.filter(post => post.userId === userData.$id);
 
-    const loadImages = async () => {
-        if(posts){
-            const imagePromises = posts.map(post => appwriteService.filePreview(post.featuredImage));
-            await Promise.all(imagePromises);
-            setImagesLoaded(true);
-        }
-    }
-
-    useEffect(() => {
-        loadImages();
-    },[])
-
-    if(!imagesLoaded) {
-        return <div className="w-full flex justify-center items-center font-bold h-screen">
-            <Loading />
-        </div>
-    }
+    const handleCardClick = (postId) => {
+        navigate(`/posts/${postId}`);
+    };
 
     if(!filteredPosts || filteredPosts.length === 0) {
         return (
@@ -45,14 +32,24 @@ function MyPosts() {
     }
 
     return (
-        <div className="w-full px-9 sm:px-0 py-8">
+        <div className="w-full py-8">
             <Container>
-                <div className="flex flex-wrap -mx-2">
-                {posts && posts.map((post) => 
-                (
-                    post.userId === userData.$id &&
-                    <div key = {post.$id} className="p-2 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-                        <Postcard {...post} />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {filteredPosts.map((post, index) => (
+                    <div 
+                        key={post.$id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                        <BlogCard 
+                            id={post.$id}
+                            title={post.title}
+                            image={post.featuredImage}
+                            excerpt={post.excerpt || generateExcerpt(post.content)}
+                            date={formatDate(post.publishedDate || post.$createdAt)}
+                            author={post.author}
+                            onClick={() => handleCardClick(post.$id)}
+                        />
                     </div>
                 ))}
                 </div>
