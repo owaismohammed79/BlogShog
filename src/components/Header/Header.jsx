@@ -26,7 +26,7 @@ const Header = () => {
         <div className="glass-effect rounded-full px-6 py-3 flex items-center justify-between">
           {/* Logo */}
           <NavLink 
-            to="/home" 
+            to="/" 
             className="flex items-center space-x-2 group transition-all duration-300"
           >
             <BookOpen className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
@@ -53,7 +53,7 @@ const Header = () => {
             ) : (
               <>
                 <NavLink
-                  to="/home"
+                  to="/"
                   className={({ isActive }) => `${baseLinkStyle} ${isActive ? activeLinkStyle : inactiveLinkStyle}`}
                 >
                   <Home className="w-4 h-4" />

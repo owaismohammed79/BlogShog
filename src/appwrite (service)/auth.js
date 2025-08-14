@@ -29,10 +29,10 @@ export class AuthService{
         this.account = new Account(this.client);
     }
 
-    async createAccount({email, password}) {//similarly isme function keywrd nahi use ho rha
+    async createAccount({email, password, name}) {//similarly isme function keywrd nahi use ho rha
         //try catch as there might be times when appwrite servers are down/anything
         try {
-            const userAccount = await this.account.create(ID.unique(),email, password);
+            const userAccount = await this.account.create(ID.unique(),email, password, name);
             if(userAccount){
                 return this.login({email, password}); //Ek class function me baitha same class ka function call kar rha he
             }else {
@@ -57,7 +57,7 @@ export class AuthService{
 
     async loginWithGoogle(){
         try {
-            const userData =  this.account.createOAuth2Session('google', `${conf.BaseUrl}/home`, `${conf.BaseUrl}/login`)
+            const userData =  this.account.createOAuth2Session('google', `${conf.BaseUrl}/`, `${conf.BaseUrl}/login`)
             //This fucking thing actually returns user Data but the documentation doesn't say so
             localStorage.setItem('auth_token', userData.$id);
             return userData;

@@ -21,8 +21,12 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/home",
-        element: <Home />
+        index: true,
+        element: (
+          <Protected authentication>
+            <Home />
+          </Protected>
+        ),
       },
       {
         path: "/login",

@@ -17,7 +17,7 @@ function EditPost() {
                 setLoading(false)
             })
         } else {
-            navigate('/home')
+            navigate('/')
         }
     }, [slug, navigate])
 

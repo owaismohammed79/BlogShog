@@ -27,7 +27,7 @@ function Signup() {
                 const userData = await authService.getCurrentUser()
                 if(userData) {
                     dispatch(authLogin(userData))
-                    navigate("/home")
+                    navigate("/")
                 } else {
                     setError("Failed to get user data after account creation")
                 }
@@ -46,7 +46,7 @@ function Signup() {
           authService.loginWithGoogle().then((userData) => {
             if(userData){
               dispatch(authLogin(userData))
-              navigate("/home")
+              navigate("/")
             }
           })
         } catch (error) {

@@ -16,13 +16,13 @@ function Protected({children, authentication =true}) {
         navigate("/login")
       } else if(!authentication && authStatus){ //TODO: the else statement feels a bit fishy here coz he shouldn't
         //be sending the user to the home page everytime...
-          navigate("/home")
+          navigate("/")
       }
       setLoading(false)
   },[authentication, authStatus, navigate]) //Check that even navigate is added as a dependency i.e coz whenever you navigate from 
   //one page to another 
 
-  return loading ? <h1>{Loading}</h1>: <>{children}</>; //Children ko enclose karna hoga, just can't return children
+  return loading ? <h1>Loading...</h1>: <>{children}</>; //Children ko enclose karna hoga, just can't return children
 }
 
 Protected.propTypes = {

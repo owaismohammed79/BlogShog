@@ -27,7 +27,7 @@ function Login() {
           const userData = await authService.getCurrentUser()
           if(userData) {
             dispatch(login(userData))
-            setTimeout(() => navigate("/home"), 100)
+            setTimeout(() => navigate("/"), 100)
           }
         }
       } catch (error) {
@@ -45,7 +45,7 @@ function Login() {
             dispatch(login(userData))
           }
         })
-        setTimeout(() => navigate("/home"), 100)
+        setTimeout(() => navigate("/"), 100)
       } catch (error) {
         console.error("Google login error:", error)
         setError(error.message || "An error occurred while logging in with Google")

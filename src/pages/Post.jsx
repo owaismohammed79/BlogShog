@@ -41,14 +41,14 @@ export default function Post() {
                     });
 
                 } else {
-                    navigate("/home");
+                    navigate("/");
                 }
             }).catch((error) => {
                 setError(error.message || "Failed to fetch post.");
                 console.log(error);
             });
         } else {
-            navigate("/home");
+            navigate("/");
         }
     }, [slug, navigate]);
 
@@ -56,7 +56,7 @@ export default function Post() {
         appwriteService.deletePost(post.$id).then((status) => {
             if (status) {
                 appwriteService.deleteFile(post.featuredImage);
-                navigate("/home");
+                navigate("/");
             }
         });
     };
@@ -77,7 +77,7 @@ export default function Post() {
         <div className="min-h-screen">
             <div className="max-w-4xl mx-auto px-4 pt-6">
                 <button
-                    onClick={() => navigate('/home')}
+                    onClick={() => navigate('/')}
                     className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors group"
                 >
                     <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
