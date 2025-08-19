@@ -23,29 +23,29 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 p-4">
       <nav className="max-w-7xl mx-auto">
-        <div className="glass-effect rounded-full px-6 py-3 flex items-center justify-between">
+        <div className="glass-effect rounded-full px-2 sm:px-6 py-3 flex items-center justify-between">
           {/* Logo */}
           <NavLink 
             to="/" 
-            className="flex items-center space-x-2 group transition-all duration-300"
+            className="flex items-center space-x-1 sm:space-x-2 group transition-all duration-300"
           >
             <BookOpen className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
-            <span className="text-xl font-bold text-white">BlogShog</span>
+            <span className="text-lg sm:text-xl font-bold text-white">BlogShog</span>
           </NavLink>
 
           {/* Navigation Items */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {!authStatus ? (
               <>
                 <NavLink
                   to="/login"
-                  className="btn-secondary text-sm rounded-full"
+                  className="btn-secondary px-4 sm:px-6 text-sm rounded-full"
                 >
                   Login
                 </NavLink>
                 <NavLink
                   to="/signup"
-                  className="btn-primary text-sm rounded-full"
+                  className="btn-primary px-4 sm:px-6 text-sm rounded-full"
                 >
                   Signup
                 </NavLink>
