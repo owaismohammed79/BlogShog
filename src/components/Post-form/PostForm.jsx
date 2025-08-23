@@ -58,7 +58,7 @@ function PostForm({post}) {
             content: contentString,
             author: userData.name || 'Anonymous',
             publishedDate: new Date().toISOString(),
-            excerpt: generateExcerpt(contentString, 150),
+            excerpt: generateExcerpt(contentString, 100),
             userId: userData.$id,
         };
 

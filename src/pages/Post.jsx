@@ -5,7 +5,7 @@ import { Button } from "../components";
 import { useSelector } from "react-redux";
 import Loading from "../components/ui/Loading";
 import DOMPurify from 'dompurify';
-import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Share2, ArrowUp } from 'lucide-react';
 import formatDate from "../utils/formatDate";
 import { Query } from "appwrite";
 
@@ -13,6 +13,7 @@ export default function Post() {
     const [post, setPost] = useState(null);
     const [relatedPosts, setRelatedPosts] = useState([]);
     const [error, setError] = useState(null);
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const { slug } = useParams();
     const navigate = useNavigate();
 
@@ -52,12 +53,32 @@ export default function Post() {
         }
     }, [slug, navigate]);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 400) {
+                setShowScrollTop(true);
+            } else {
+                setShowScrollTop(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const deletePost = () => {
         appwriteService.deletePost(post.$id).then((status) => {
             if (status) {
                 appwriteService.deleteFile(post.featuredImage);
                 navigate("/");
             }
+        });
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
         });
     };
 
@@ -134,10 +155,7 @@ export default function Post() {
                     )}
                 </header>
 
-                <div
-                    className="prose prose-invert prose-lg max-w-none"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <div className="prose prose-invert prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
 
                 {relatedPosts.length > 0 && (
                     <div className="mt-16">
@@ -165,6 +183,16 @@ export default function Post() {
                     </div>
                 )}
             </article>
+            
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-8 right-8 bg-gray-800/50 backdrop-blur-md border border-gray-700/50 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-all duration-300 z-50 animate-fade-in"
+                    aria-label="Scroll to top"
+                >
+                    <ArrowUp className="w-6 h-6" />
+                </button>
+            )}
         </div>
     );
 }
