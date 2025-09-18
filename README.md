@@ -4,7 +4,7 @@
 
 BlogShog is a modern blogging application built with React and Appwrite, designed for creating, managing, and sharing blog posts effortlessly. It leverages powerful libraries and tools to provide a rich editing experience, seamless state management, and smooth navigation.
 
-## ✨ Features
+## Features
 - Rich text blog editor powered by TinyMCE
 - User authentication and backend powered by Appwrite
 - Responsive UI with Tailwind CSS animations
@@ -13,7 +13,10 @@ BlogShog is a modern blogging application built with React and Appwrite, designe
 - Client-side routing with React Router DOM
 - Form handling with React Hook Form
 
-## 🚀 Installation
+## Demo Video
+[![Demo Video](./public/assets/HomePageImg.png)](https://screenrec.com/share/s5xnTjlhK2)
+
+## Installation
 
 1. **Clone the repository**  
 ```bash
@@ -37,7 +40,7 @@ npm run dev
 
 The app will be available at `http://localhost:5173` (or the port Vite assigns).
 
-## 💻 Usage
+## Usage
 
 - **Creating posts:** Use the rich text editor to compose and format your blog posts.
 - **Authentication:** Sign up or log in using your Appwrite credentials.

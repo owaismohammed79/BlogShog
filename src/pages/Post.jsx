@@ -5,9 +5,11 @@ import { Button } from "../components";
 import { useSelector } from "react-redux";
 import Loading from "../components/ui/Loading";
 import DOMPurify from 'dompurify';
-import { ArrowLeft, Calendar, User, Share2, ArrowUp } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Share2, ArrowUp, CheckCircle2Icon } from 'lucide-react';
 import formatDate from "../utils/formatDate";
 import { Query } from "appwrite";
+import { Alert, AlertTitle } from "@/components/ui/alert"
+import { createPortal } from 'react-dom';
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -21,6 +23,8 @@ export default function Post() {
     
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [isAlertVisible, setIsAlertVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState(null);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -65,6 +69,19 @@ export default function Post() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setAlertMessage("URL copied to clipboard!")
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+      setAlertMessage("Failed to copy!")
+    } finally {
+      setIsAlertVisible(true);
+      setTimeout(() => setIsAlertVisible(false), 3000);
+    }
+  };
 
     const deletePost = () => {
         appwriteService.deletePost(post.$id).then((status) => {
@@ -128,6 +145,15 @@ export default function Post() {
             </div>
 
             <article className="max-w-4xl mx-auto px-4 pb-20">
+                {isAlertVisible && createPortal(
+                    <div className="w-full">
+                        <Alert variant="default" className="left-1/2 -translate-x-1/2 rounded-full w-56 md:w-60 fixed bottom-12 h-12 flex items-center justify-center">
+                            <CheckCircle2Icon className="h-4 w-4" />
+                            <AlertTitle className="m-0">{alertMessage}</AlertTitle>
+                        </Alert>
+                    </div>,
+                    document.body
+                )}
                 <header className="mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
                         {post.title}
@@ -142,7 +168,7 @@ export default function Post() {
                             <Calendar className="w-5 h-5" />
                             <span>{formatDate(post.publishedDate || post.$createdAt)}</span>
                         </div>
-                        <button className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-800/50 rounded-full transition-colors">
+                        <button className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-800/50 rounded-full transition-colors" onClick={handleShare}>
                             <Share2 className="w-4 h-4" />
                             <span>Share</span>
                         </button>
