@@ -21,13 +21,13 @@ const Header = () => {
   const inactiveLinkStyle = "text-gray-300 hover:text-white hover:bg-gray-800/50";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 p-4">
-      <nav className="max-w-7xl mx-auto">
-        <div className="glass-effect rounded-full px-2 sm:px-6 py-3 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 p-4 w-full">
+      <nav className="max-w-7xl mx-auto w-[370px] sm:w-auto">
+        <div className="glass-effect rounded-full px-2 sm:px-6 py-3 flex items-center justify-between w-full sm:space-x-2">
           {/* Logo */}
           <NavLink 
             to="/" 
-            className="flex items-center space-x-1 sm:space-x-2 group transition-all duration-300"
+            className="flex items-center space-x-1 sm:space-x-2 group transition-all duration-300 ml-1 sm:ml-0"
           >
             <BookOpen className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" />
             <span className="text-lg sm:text-xl font-bold text-white">BlogShog</span>
