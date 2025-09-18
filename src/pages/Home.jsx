@@ -10,26 +10,25 @@ import { useNavigate } from 'react-router-dom'
 
 function Home() {
     const [loading, setLoading] = useState(true)
-    const authStatus = useSelector(state => state.auth.status)
     const dispatch = useDispatch()
     const posts = useSelector(state => state.posts.posts)
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try{
-                appwriteService.getPosts().then((posts) => {
-                    if(posts) dispatch(fetchPostsSuccess(posts.documents))
-                    setLoading(false)
-                })
-            } catch (error) {
-                console.log(error)
-                dispatch(fetchPostsFailure(error))
-                setLoading(false)
-            }
-        }
-        fetchPosts()
-    }, [dispatch])
+        appwriteService.getPosts()
+            .then((posts) => {
+                if (posts) {
+                    dispatch(fetchPostsSuccess(posts.documents));
+                }
+            })
+            .catch((error) => {
+                console.error("Failed to fetch posts:", error);
+                dispatch(fetchPostsFailure(error.message));
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [dispatch]);
 
     const handleCardClick = (postId) => {
         navigate(`/posts/${postId}`);
@@ -39,22 +38,6 @@ function Home() {
         return (
             <div className='flex justify-center items-center w-full py-8 mt-4 font-bold min-h-screen'>
                 <Loading />
-            </div>
-        )
-    }
-
-    if (!authStatus) {
-        return (
-            <div className="w-full py-8 mt-4 text-center min-h-screen">
-                <Container>
-                    <div className="flex flex-wrap">
-                        <div className="p-2 w-full">
-                            <h1 className="text-2xl font-bold text-gray-300 hover:text-white">
-                                Login to read posts
-                            </h1>
-                        </div>
-                    </div>
-                </Container>
             </div>
         )
     }

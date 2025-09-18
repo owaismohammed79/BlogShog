@@ -23,9 +23,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <Protected authentication>
             <Home />
-          </Protected>
         ),
       },
       {
