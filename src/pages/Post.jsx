@@ -10,6 +10,9 @@ import formatDate from "../utils/formatDate";
 import { Query } from "appwrite";
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { createPortal } from 'react-dom';
+import Prism from "prismjs";
+import "prismjs/themes/prism-okaidia.css";
+import "prismjs/components/prism-jsx";
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -35,6 +38,10 @@ export default function Post() {
                     post.content = DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } });
                     setPost(post);
                     setPreviewUrl(appwriteService.filePreview(post.featuredImage));
+
+                    setTimeout(() => {
+                        Prism.highlightAll();
+                    }, 0);
 
                     appwriteService.getPosts([Query.limit(3)]).then((postsData) => {
                         if (postsData) {
